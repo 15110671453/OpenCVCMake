@@ -1,0 +1,9 @@
+OpenCV使用记录 第一步 使用CMake
+
+图形界面 编译安装 OpenCV
+
+前面 在学习使用OpenGL的过程中
+
+有使用过CMake图形界面安装glw 库
+
+这里再次特别备注CMake的使用方法记录
