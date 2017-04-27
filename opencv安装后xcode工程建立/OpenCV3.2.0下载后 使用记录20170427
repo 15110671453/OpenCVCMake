@@ -1,0 +1,81 @@
+OpenCV3.2.0下载后 使用记录20170427
+
+第一 原公司mac盒子我已经安装了Cmake
+
+通过dmg安装的cmake的gui程序
+
+可视化界面
+
+然后对opencv3.2.0进行源码编译安装
+
+选择的是xcode编译器
+
+两次configure 一次generater 即可 并没有更改任何的3.2.0 的cmakeconfigure选项
+
+但是可以细心研究一下
+
+第二 编译成功后 如何使用
+
+打开xcode 新建commande新工程
+
+我选择的语言是c++开发语言
+
+新建工程完毕后  工程默认已经生成好main的 工程入口文件 c++的
+
+我们需要导入opencv的依赖库
+正确的导入方式
+
+我们在opencv Cmake安装的时候 指定的build的路径 /Users/admindyn/Desktop/OpenCVBuild2
+
+因此 xcode工程 buildphases
+中添加工程依赖：
+
+第一  选择 target dependencies  添加 到Opencv的build路径下 发现无法添加
+
+方案一 失败
+
+第二 选择 link binary with libraries 添加
+
+add other 到opencv的build 路径下 选择opencv.xcodeproj
+
+在点击确认  切记 到/Users/admindyn/Desktop/OpenCVBuild2 下 不要立即点击倒入
+
+否则倒入很多重复的和不需要的东西
+
+
+第三 第二步倒入完毕后 在xcode工程的打开工程预览中 framwoks 就会看到
+
+Opencv 的sources 目录 是源码  和 products 目录 放的是lib 库
+
+
+那么我们奇怪的发现 在build phases下 的 link binary with libraries 下没有看到任何依赖库添加成功啊
+
+我们再次点击 link binary with libraries 点击添加 发现多了一个文件夹的选择
+
+以前空工程只能选择xcode苹果提供的依赖库进行选择添加
+
+现在多了一个目录 wokespace 发现 这个 目录下的依赖库 正式 工程预览 frameworks下的
+
+依赖库 名字一摸一样  因此我们选中 workspace 下的一个个依赖库 点击添加
+
+这次添加依赖库成功
+
+第四 我们需不需要 添加 依赖库的头文件路径呢
+
+到 buildsetting 中 Header search path 添加路径 /Users/admindyn/Downloads/opencv-3.2.0/include 发现我们添加的是 下载opencv源码的include路径 而不是cmake 
+安装opencv时build路径下的 为什么？
+
+我们打开xcode工程预览 到frameworks 下 sources 目录下  选择一个头文件 右键
+show in finder 发现路径 就是 /Users/admindyn/Downloads/opencv-3.2.0/include
+下载的opencv3.2.0 时的路径 
+
+但是有两个文件 是不在下载路径 而是在build路径下的
+cvconfig.h opencv_modules.hpp 这两个文件 
+而且这两个文件貌似没什么用  这个路径在framworks 下的sources 下的modules下的
+opencv_core下可以找到  感觉这个应该没用的样子
+
+
+
+
+
+
