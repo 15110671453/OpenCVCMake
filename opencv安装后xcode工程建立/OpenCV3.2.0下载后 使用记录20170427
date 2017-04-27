@@ -75,6 +75,15 @@ cvconfig.h opencv_modules.hpp 这两个文件
 opencv_core下可以找到  感觉这个应该没用的样子
 
 
+第五  选择工程 run 发现报错
+dyld: Library not loaded: @rpath/libopencv_calib3d.3.2.dylib
+  Referenced from: /Users/admindyn/Library/Developer/Xcode/DerivedData/OpencvTest-cnpmquljdqfzvgcftrmourkxauus/Build/Products/Debug/OpencvTest
+  Reason: image not found
+(lldb) 
+
+到 framworks 下 找 这些依赖库 show in finder 发现在 cmake的 build 路径下的lib 目录中 我们需要 到build setting 下添加 lib 的路径
+
+
 
 
 
