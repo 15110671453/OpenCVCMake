@@ -733,5 +733,9 @@ macserver1:opencvbuildreleasedyn admindyn$
 无论怎样xcode在集成添加opencv依赖前 都需要添加c++依赖库
 
 
-
+ 配置工程总是经过很多次尝试才成功的,
+ 第一 添加了2个Search路径,headersearchpath 与 libsearchpath
+ 剩下的都是默认值,不做改变,
+ 第二 需不需要改变Apple LLVM Language C++,
+ 第三 需不需要Link Binary With Libraries里加入其它的库类,比如c++支持库仅仅是下载下来的18个OpenCV库,
 
