@@ -160,18 +160,19 @@ Configuring done
 
 
 
-注意
+注意1
 
 两次配置后 在没有点击generate 之前 在 要放置cmake配置文件 和 二进制文件的文件夹下没有bin和lib目录 只有include 而且只是空的
 
 
-注意
+注意2
 
 点击generate 之后 在要放置cmake配置文件 和 二进制文件的文件夹下 生成
 了新的目录 lib 与 bin  但是发现还是空的
 
 
-注意 发现generate 没有最终生成想要的
+注意3
+发现generate 没有直接最终生成想要的
 
 
 还需要 到该 要放置cmake配置文件 和 二进制文件的文件夹下 执行 make 命令
@@ -182,7 +183,7 @@ Configuring done
 进行 make 命令  与 make  install 命令 
 
 
-注意  最终 成功 
+注意4  最终 成功 
 
 
 macserver1:local admindyn$ cd /Users/admindyn/Desktop/opencvbuildreleasedyn 
@@ -667,6 +668,69 @@ Scanning dependencies of target opencv_core
 [ 40%] Generating opencl_kernels_imgproc.cpp, opencl_kernels_imgproc.hpp
 Scanning dependencies of target opencv_imgproc
 下面 真正编译安装opencv 组件 imgproc 功能组件1
+
+
+------》。。。。。。。。
+[ 98%] Built target opencv_visualisation
+Scanning dependencies of target opencv_interactive-calibration
+[ 99%] Building CXX object apps/interactive-calibration/CMakeFiles/opencv_interactive-calibration.dir/calibController.cpp.o
+[ 99%] Building CXX object apps/interactive-calibration/CMakeFiles/opencv_interactive-calibration.dir/calibPipeline.cpp.o
+[ 99%] Building CXX object apps/interactive-calibration/CMakeFiles/opencv_interactive-calibration.dir/frameProcessor.cpp.o
+[ 99%] Building CXX object apps/interactive-calibration/CMakeFiles/opencv_interactive-calibration.dir/main.cpp.o
+[ 99%] Building CXX object apps/interactive-calibration/CMakeFiles/opencv_interactive-calibration.dir/parametersController.cpp.o
+[ 99%] Building CXX object apps/interactive-calibration/CMakeFiles/opencv_interactive-calibration.dir/rotationConverters.cpp.o
+[ 99%] Linking CXX executable ../../bin/opencv_interactive-calibration
+[ 99%] Built target opencv_interactive-calibration
+Scanning dependencies of target opencv_version
+[ 99%] Building CXX object apps/version/CMakeFiles/opencv_version.dir/opencv_version.cpp.o
+[100%] Linking CXX executable ../../bin/opencv_version
+[100%] Built target opencv_version
+macserver1:opencvbuildreleasedyn admindyn$ 
+
+直到这里 opencv 才编译安装完毕
+
+
+注意5 
+
+
+最终我们 知道 cmake 只是生成 要编译安装的源码 要安装到的平台前
+的 中间件文件  最终编译安装 还需要到 要放置cmake配置文件 和 二进制文件的文件夹下
+
+进行 make 命令  与 make  install 命令 
+
+执行之后 如上 终端 执行一段时间编译安装后
+
+最终生成的bin命令 与 lib 库文件 存储目录 正是 上面配置的要放置cmake配置文件 和 二进制文件的文件夹
+在给文件夹下的bin 和 lib 这两个原本空的目录下 生成了许多文件
+
+
+
+
+注意6
+
+这样opencv就算配置完成了，以后我们用到的文件其实只有三个，分别是：
+
+编译目标目录下的
+
+/Users/admindyn/Desktop/opencvbuildreleasedyn／bin
+
+/Users/admindyn/Desktop/opencvbuildreleasedyn／lib
+
+和：
+
+源码目录下的：
+
+/Users/admindyn/Desktop/opencvformac/opencv-master／include 目录
+
+注意7
+
+将include 目录拷贝到/Users/admindyn/Desktop/opencvbuildreleasedyn下并删除其他无用的文件或许可以节省空间（几个G）
+
+
+----------------------------------+++++++++---------------------
+之后就是如何集成到xcode来进行开发了
+
+无论怎样xcode在集成添加opencv依赖前 都需要添加c++依赖库
 
 
 
