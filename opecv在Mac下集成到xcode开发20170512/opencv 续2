@@ -1,0 +1,42 @@
+opencv 续2 
+
+问题解决
+第一：
+
+编译运行时 提示 找不到opencv_modules.hpp 文件
+
+将/Users/admindyn/Desktop/opencvbuildreleasedyn/opencv2/opencv_modules.hpp
+
+复制到/Users/admindyn/Desktop/opencvformac/opencv-master/include/opencv2/opencv_modules.hpp
+
+解决
+
+第二：
+
+再次编译运行  发现 
+
+dyld: Library not loaded: @rpath/libopencv_calib3d.3.2.dylib
+
+http://www.jianshu.com/p/cbfe2e74230a
+
+这里不能正确加载/Users/admindyn/Desktop/opencvbuildreleasedyn/lib
+下生成的opencv的动态链接库
+
+
+修改commandline opencv工程的buildsetting（勾选 all combined 搜索）
+
+搜索 rpath  修改 Runpath Search Paths ： debug 和 Release 路径 都添加 
+/Users/admindyn/Desktop/opencvbuildreleasedyn/lib
+都添加 该路径
+
+ 第三：
+
+ 再次编译运行 正常
+
+
+ 需要参考几个网文
+ OSX 上@rpath, @loader_path, @executable_path 这些变量的理解
+http://nick.luckygarden.org/rpath-loader_path-executable_path/
+
+xcode cocoa开发 如何使用第三方的dylib库
+http://blog.devep.net/virushuo/2009/07/01/xcodecocoadylib.html

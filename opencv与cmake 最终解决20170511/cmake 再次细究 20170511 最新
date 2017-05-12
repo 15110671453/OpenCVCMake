@@ -712,15 +712,15 @@ macserver1:opencvbuildreleasedyn admindyn$
 
 编译目标目录下的
 
-/Users/admindyn/Desktop/opencvbuildreleasedyn／bin
+/Users/admindyn/Desktop/opencvbuildreleasedyn/bin
 
-/Users/admindyn/Desktop/opencvbuildreleasedyn／lib
+/Users/admindyn/Desktop/opencvbuildreleasedyn/lib
 
 和：
 
 源码目录下的：
 
-/Users/admindyn/Desktop/opencvformac/opencv-master／include 目录
+/Users/admindyn/Desktop/opencvformac/opencv-master/include 目录
 
 注意7
 

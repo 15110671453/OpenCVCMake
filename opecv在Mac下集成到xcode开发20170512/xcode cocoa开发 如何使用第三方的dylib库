@@ -1,0 +1,90 @@
+xcode cocoa开发 如何使用第三方的dylib库
+
+update:留言中jjgod的方法更为正宗和简单。请参考。不过如果dylib之间有依赖关系，你又不想重新编译。那大概还是要用我这个办法的。
+
+所谓dylib，就是bsd风格的动态库。基本可以认为等价于windows的dll和linux的so。mac基于bsd，所以也使用的是dylib。
+
+如果你需要引用一个第三方的dylib，在xcode下编译出cocoa程序，在本机上运行是不会出问题的。但是发布出来，给其他用户用，就可能出问题。因为用户不一定有这个库。
+
+这个问题给我造成了相当的困扰，我到现在也没找到正规的方法。但是我确实解决了这个问题，虽然方法不一定正宗。不管怎么说，写下来，如果暂时没有更好的办法，那么先这样做。如果谁有更好的办法，也请一定不吝留言或邮件给我。
+
+我的办法是这样的:
+
+
+1 otool -L yourapp.app/Contents/MacOS/yourapp
+
+这一步的意思是对你编译出的app使用otool命令，以便获得依赖哪些dylib的信息。注意这个路径。cocoa的app在命令行下表现为目录。所有相关的东西都在里面。
+结果如下所示：
+yourapp.app/Contents/MacOS/yourapp:
+/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa (compatibility version 1.0.0, current version 12.0.0)
+/usr/local/lib/lib01.dylib (compatibility version 0.0.0, current version 0.1.0)
+/usr/local/lib/lib02.dylib (compatibility version 0.0.0, current version 0.1.0)
+/usr/local/lib/lib03.dylib (compatibility version 0.0.0, current version 0.1.0)
+/usr/lib/libgcc_s.1.dylib (compatibility version 1.0.0, current version 1.0.0)
+/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 111.0.0)
+/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 227.0.0)
+/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 476.0.0)
+/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit (compatibility version 45.0.0, current version 949.0.0)
+/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation (compatibility version 300.0.0, current version 677.12.0)
+
+注意我标红的地方。假如lib01,lib02,lib03是本程序引用的第三方库，那么在这个程序里面，他们的引用地址是位于/usr/local/lib上的。这是开发机上的安装情况。而使用这个程序的客户机未必安装这些东西，所以程序就要出错。
+
+显然，我们需要做2件事。a 把这些库附带在app上 b 把他们的引用地址修改到正确的位置。
+
+2 mkdir yourapp.app/Contents/dylib
+
+在编译出来的app中，创建dylib目录
+
+然后把所有需要的库复制过去
+
+cp /usr/local/lib/lib01.dylib yourapp.app/Contents/dylib/
+cp /usr/local/lib/lib02.dylib yourapp.app/Contents/dylib/
+cp /usr/local/lib/lib03.dylib yourapp.app/Contents/dylib/
+
+3 install_name_tool -change /usr/local/lib/lib01.dylib @loader_path/../dylib/lib01.dylib "yourapp.app/Contents/MacOS/yourapp"
+
+install_name_tool 是苹果提供的用来修改dylib安装名称的命令。这个命令执行之后，再用otool -L 就可以看到变化了
+
+yourapp.app/Contents/MacOS/yourapp:
+/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa (compatibility version 1.0.0, current version 12.0.0)
+@loader_path/../dylib/lib01.dylib (compatibility version 0.0.0, current version 0.1.0)
+/usr/local/lib/lib02.dylib (compatibility version 0.0.0, current version 0.1.0)
+/usr/local/lib/lib03.dylib (compatibility version 0.0.0, current version 0.1.0)
+/usr/lib/libgcc_s.1.dylib (compatibility version 1.0.0, current version 1.0.0)
+/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 111.0.0)
+/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 227.0.0)
+/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 476.0.0)
+/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit (compatibility version 45.0.0, current version 949.0.0)
+/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation (compatibility version 300.0.0, current version 677.12.0)
+
+注意标红的位置。已经变化了。@loader_path 指的是应用程序运行的位置，也就是yourapp.app/Contents/MacOS/yourapp，所以要用一个..，以便定位到第2步创建的dylib目录。
+重复这个命令，修改lib02,lib03
+
+
+4 otool -L yourapp.app/Contents/dylib/*.dylib
+
+继续用otool 来检查dylib下面使用的第三方库是否还有其他依赖，install_name是否正确，重复1，2，3的步骤，把所需要的dylib复制过来，修改install_name。
+
+如果都改对了，那么这个app就附带上了dylib，可以在其他机器上正确运行了，不用非要寻找/usr/local/lib下面的库了。
+
+
+刚才我们修改的结果是一个build的结果。当然，每次build都这么折腾一下很麻烦。所以继续这样做：
+
+1 前面的步骤得到了一个完整的dylib目录。把这个dylib复制一份备用。比如放在你的xcode项目下面。
+
+2 编写一个脚本：
+
+mkdir "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/dylib"
+cp -f /your/path/to/xcode_project_name/dylib/*.dylib "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/dylib/"
+
+install_name_tool -change /usr/local/lib/lib01.dylib @loader_path/../dylib/lib01.dylib "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME"
+(用这个格式重复前面对app使用过的dylib)
+
+3 在xcode中，展开targets节点，右键点工程名称，在菜单中选Add->New Build Phasa->New Run Script Build Phasa，在打开的对话框里面，把刚才的脚本贴进去。如图所示。
+
+这个脚本会在build之后自动运行。不过我这里有个奇怪的问题，如果Shell里面写了/bin/sh，会报告找不到这个文件(实际上存在)，而让shell为空，反而可以正确的运行shell命令。
+
+
+
+
+经过这些处理，每次编译出来的app就可以拿到其他机器上运行了。可真够麻烦的...

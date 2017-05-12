@@ -1,0 +1,10 @@
+OpenCV For MAC VS IOS 续1
+
+介绍 如何针对IOS平台使用opencv
+
+http://docs.opencv.org/master/d5/da3/tutorial_ios_install.html
+
+http://docs.opencv.org/2.4/doc/tutorials/ios/table_of_content_ios/table_of_content_ios.html#table-of-content-ios
+
+关于cmake 编译安装 如何使用 系统讲解
+https://cmake.org/cmake-tutorial/
